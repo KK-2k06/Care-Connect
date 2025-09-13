@@ -195,7 +195,7 @@ export default function LandingPage() {
                     </div>
                 </div>
                 <div className={`w-full md:w-1/2 flex justify-center items-center transition-all duration-1000 ease-out delay-200 ${isFinalSectionInView ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'}`}>
-                    <div className="max-w-md text-center md:text-left">
+                    <div className="max-w-90 text-center md:text-left">
                         <h3 className="font-bold text-4xl md:text-5xl text-blue-700 dark:text-blue-400">
                             {lastFeature.title}
                         </h3>
@@ -225,8 +225,8 @@ export default function LandingPage() {
                 </div>
               </div>
               
-              <footer className="mt-12 max-w-4xl mx-auto px-8">
-                <div className="flex justify-between items-center gap-3 text-sm text-slate-600 dark:text-slate-400 py-5">
+              <footer className="max-w-4xl mx-auto pt-1">
+                <div className="flex justify-between items-center  text-sm text-slate-600 dark:text-slate-400">
                   <div>© {new Date().getFullYear()} Campus Wellbeing. All rights reserved.</div>
                   <div aria-hidden>Not a substitute for professional care.</div>
                 </div>
