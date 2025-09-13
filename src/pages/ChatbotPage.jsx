@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, X, Send, Moon, Sun, MessageSquare, Clock, Settings } from 'lucide-react'
+import { Menu, X, Send, Moon, Sun, MessageSquare, Clock, Settings, ArrowLeft } from 'lucide-react'
 
 export default function ChatbotPage() {
   const [dark, setDark] = useState(() => {
@@ -79,8 +79,9 @@ export default function ChatbotPage() {
             >
               {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
-            <Link to="/" className="text-lg font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              Care Connect
+            <Link to="/" className="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              <ArrowLeft className="h-5 w-5" />
+              <span className="text-lg font-semibold">Care Connect</span>
             </Link>
           </div>
           
