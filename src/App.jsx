@@ -5,6 +5,8 @@ import SimplePage from './pages/SimplePage.jsx'
 import ChatbotPage from './pages/ChatbotPage.jsx'
 import BookingPage from './pages/BookingPage.jsx'
 import ResourcesPage from './pages/ResourcesPage.jsx'
+import LoginPage from './pages/LoginPage.jsx'
+import TermsPage from './pages/TermsPage.jsx'
 
 export default function App(){
   return (
@@ -17,6 +19,8 @@ export default function App(){
         <Route path="/p2p" element={<SimplePage title="P2P" />} />
         <Route path="/game" element={<SimplePage title="Game" />} />
         <Route path="/admin" element={<SimplePage title="Admin" />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/terms" element={<TermsPage />} />
       </Routes>
     </BrowserRouter>
   )
