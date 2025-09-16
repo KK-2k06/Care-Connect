@@ -152,6 +152,14 @@ export default function LandingPage() {
     } catch (e) { console.warn(e); }
   };
 
+  const onLogout = () => {
+    try {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    } catch {}
+    navigate('/login');
+  };
+
   return (
     <div className="text-slate-900 dark:text-slate-100">
       <header
@@ -161,6 +169,7 @@ export default function LandingPage() {
         <div className="max-w-[1100px] mx-auto px-4">
           <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-4">
             <div className="flex gap-2">
+              <button onClick={onLogout} className="h-10 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm text-sm font-medium">Logout</button>
               <button onClick={onShare} aria-label="Share" title="Share" className="h-10 w-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm flex items-center justify-center"><Share2 className="h-5 w-5 text-slate-700 dark:text-slate-200" /></button>
             </div>
             <h1 className="text-center font-extrabold text-[clamp(24px,3.2vw,34px)] tracking-tight">Care Connect</h1>
