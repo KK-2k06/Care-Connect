@@ -3,6 +3,67 @@ import { Link } from 'react-router-dom'
 
 export default function LoginPage(){
   const [role, setRole] = useState('user')
+  const [userEmail, setUserEmail] = useState('')
+  const [userPassword, setUserPassword] = useState('')
+  const [adminEmail, setAdminEmail] = useState('')
+  const [adminPassword, setAdminPassword] = useState('')
+  const [adminCode, setAdminCode] = useState('')
+  const [loadingUser, setLoadingUser] = useState(false)
+  const [loadingAdmin, setLoadingAdmin] = useState(false)
+  const [errorUser, setErrorUser] = useState('')
+  const [errorAdmin, setErrorAdmin] = useState('')
+
+  async function handleUserLogin(e){
+    e.preventDefault()
+    setErrorUser('')
+    setLoadingUser(true)
+    try{
+      const res = await fetch((import.meta.env.VITE_API_BASE || 'http://localhost:5000') + '/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail, password: userPassword })
+      })
+      const data = await res.json()
+      if(!res.ok){
+        const msg = data?.error || data?.errors?.[0]?.msg || 'Login failed'
+        setErrorUser(msg)
+      }else{
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+        window.location.href = '/'
+      }
+    }catch(err){
+      setErrorUser('Network error')
+    }finally{
+      setLoadingUser(false)
+    }
+  }
+
+  async function handleAdminLogin(e){
+    e.preventDefault()
+    setErrorAdmin('')
+    setLoadingAdmin(true)
+    try{
+      const res = await fetch((import.meta.env.VITE_API_BASE || 'http://localhost:5000') + '/api/auth/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: adminEmail, password: adminPassword, adminCode })
+      })
+      const data = await res.json()
+      if(!res.ok){
+        const msg = data?.error || data?.errors?.[0]?.msg || 'Login failed'
+        setErrorAdmin(msg)
+      }else{
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+        window.location.href = '/'
+      }
+    }catch(err){
+      setErrorAdmin('Network error')
+    }finally{
+      setLoadingAdmin(false)
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-neutral-900">
@@ -38,12 +99,14 @@ export default function LoginPage(){
                 style={{ transform: role === 'user' ? 'translateX(0%)' : 'translateX(-50%)' }}
               >
                 {/* User form */}
-                <form className="w-1/2 pr-4 space-y-5 min-h-[320px]">
+                <form onSubmit={handleUserLogin} className="w-1/2 pr-4 space-y-5 min-h-[320px]">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Email</label>
                     <input
                       type="email"
                       placeholder="you@example.com"
+                      value={userEmail}
+                      onChange={(e)=>setUserEmail(e.target.value)}
                       className="mt-2 w-full rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
@@ -52,6 +115,8 @@ export default function LoginPage(){
                     <input
                       type="password"
                       placeholder="••••••••"
+                      value={userPassword}
+                      onChange={(e)=>setUserPassword(e.target.value)}
                       className="mt-2 w-full rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
@@ -63,19 +128,24 @@ export default function LoginPage(){
                   </div>
                   <button
                     type="submit"
-                    className="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2.5 transition shadow"
+                    disabled={loadingUser}
+                    className="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-70 text-white font-medium px-4 py-2.5 transition shadow"
                   >
-                    Login as User
+                    {loadingUser ? 'Logging in...' : 'Login as User'}
                   </button>
+                  {errorUser && (<p className="text-sm text-red-600 dark:text-red-400 text-center">{errorUser}</p>)}
+                  <p className="text-sm text-gray-700 dark:text-gray-300 text-center">Don't have an account? <Link to="/signup" className="underline text-indigo-600 hover:text-indigo-700">Sign up</Link></p>
                 </form>
 
                 {/* Admin form (same height) */}
-                <form className="w-1/2 pl-4 space-y-5 min-h-[320px]">
+                <form onSubmit={handleAdminLogin} className="w-1/2 pl-4 space-y-5 min-h-[320px]">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Admin Email</label>
                     <input
                       type="email"
                       placeholder="admin@example.com"
+                      value={adminEmail}
+                      onChange={(e)=>setAdminEmail(e.target.value)}
                       className="mt-2 w-full rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
@@ -84,6 +154,8 @@ export default function LoginPage(){
                     <input
                       type="password"
                       placeholder="••••••••"
+                      value={adminPassword}
+                      onChange={(e)=>setAdminPassword(e.target.value)}
                       className="mt-2 w-full rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
@@ -92,15 +164,20 @@ export default function LoginPage(){
                     <input
                       type="text"
                       placeholder="Enter admin code"
+                      value={adminCode}
+                      onChange={(e)=>setAdminCode(e.target.value)}
                       className="mt-2 w-full rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2.5 transition shadow"
+                    disabled={loadingAdmin}
+                    className="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-70 text-white font-medium px-4 py-2.5 transition shadow"
                   >
-                    Login as Admin
+                    {loadingAdmin ? 'Logging in...' : 'Login as Admin'}
                   </button>
+                  {errorAdmin && (<p className="text-sm text-red-600 dark:text-red-400 text-center">{errorAdmin}</p>)}
+                  <p className="text-sm text-gray-700 dark:text-gray-300 text-center">Don't have an account? <Link to="/signup" className="underline text-indigo-600 hover:text-indigo-700">Sign up</Link></p>
                 </form>
               </div>
             </div>

@@ -58,3 +58,30 @@ CareConnect is a mental health support platform designed for students, combining
 CareConnect aims to create a **safe, supportive, and stigma-free environment** for students to access help, learn, and share without judgment.
 
 ---
+
+## Backend (Node.js + MongoDB Atlas)
+
+This project includes an Express backend scaffold in `backend/` with authentication (JWT) and MongoDB (Mongoose).
+
+### Environment
+
+Create a `.env` in the project root:
+
+```
+MONGODB_URI="your atlas connection string"
+JWT_SECRET="change_this_to_a_long_random_secret"
+PORT=5000
+```
+
+### Scripts
+
+```
+npm run server   # start backend with nodemon
+```
+
+### Endpoints
+
+- POST `/api/auth/signup` { email, password, confirmPassword }
+- POST `/api/auth/login` { email, password }
+- POST `/api/auth/admin-login` { email, password, adminCode }
+- GET `/api/protected` (Authorization: Bearer <token>)
