@@ -35,7 +35,10 @@ CareConnect is a mental health support platform designed for students, combining
 
 ### 4. Peer-to-Peer Support
 - An **open platform** where students can connect and share thoughts.  
-- Single-room chat with **anonymous names** to ensure safety and privacy.  
+- **Real-time community chat** with anonymous usernames for safety and privacy.
+- **Live user count** showing how many people are currently in the chat.
+- **Instant message broadcasting** - when one user sends a message, it appears to all users immediately.
+- **WebSocket-powered** real-time communication for seamless interaction.  
 
 ---
 
@@ -46,10 +49,11 @@ CareConnect is a mental health support platform designed for students, combining
 
 ---
 
-## 🛠️ Tech Stack (Suggested)
-- **Frontend:** React.js + Tailwind CSS  
-- **Backend:** Node.js  
+## 🛠️ Tech Stack
+- **Frontend:** React.js + Tailwind CSS + Socket.IO Client
+- **Backend:** Node.js + Express + Socket.IO
 - **Database:** MongoDB / SQL
+- **Real-time Communication:** WebSocket (Socket.IO)
 - **AI Models:** Custom-trained intent detectors + Generative AI (for non-emergency cases)  
 
 ---
