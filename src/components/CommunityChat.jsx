@@ -10,6 +10,7 @@ const CommunityChat = () => {
   const [username, setUsername] = useState('')
   const [isConnected, setIsConnected] = useState(false)
   const [showUsernameModal, setShowUsernameModal] = useState(true)
+  const [connectionAttempts, setConnectionAttempts] = useState(0)
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
@@ -21,19 +22,46 @@ const CommunityChat = () => {
   }, [messages])
 
   useEffect(() => {
-    // Initialize socket connection
-    const newSocket = io('http://localhost:5000')
+    // Initialize socket connection with better configuration
+    const newSocket = io('http://localhost:5000', {
+      transports: ['websocket', 'polling'],
+      timeout: 20000,
+      forceNew: true
+    })
     setSocket(newSocket)
 
     // Handle connection events
     newSocket.on('connect', () => {
       setIsConnected(true)
-      console.log('Connected to server')
+      console.log('✅ Connected to server with ID:', newSocket.id)
     })
 
-    newSocket.on('disconnect', () => {
+    newSocket.on('disconnect', (reason) => {
       setIsConnected(false)
-      console.log('Disconnected from server')
+      console.log('❌ Disconnected from server:', reason)
+    })
+
+    newSocket.on('connect_error', (error) => {
+      console.error('❌ Connection error:', error)
+      setIsConnected(false)
+      setConnectionAttempts(prev => prev + 1)
+      
+      // Retry connection after 3 seconds
+      if (connectionAttempts < 3) {
+        setTimeout(() => {
+          console.log('🔄 Retrying connection...')
+          newSocket.connect()
+        }, 3000)
+      }
+    })
+
+    newSocket.on('reconnect', (attemptNumber) => {
+      console.log('🔄 Reconnected after', attemptNumber, 'attempts')
+      setIsConnected(true)
+    })
+
+    newSocket.on('reconnect_error', (error) => {
+      console.error('❌ Reconnection error:', error)
     })
 
     // Handle incoming messages
@@ -68,18 +96,22 @@ const CommunityChat = () => {
   }, [])
 
   const handleJoinChat = () => {
-    if (username.trim()) {
+    if (username.trim() && socket) {
+      console.log('🚀 Attempting to join community with username:', username.trim())
       socket.emit('join-community', {
         username: username.trim(),
         userId: Date.now() // Simple user ID for demo
       })
       setShowUsernameModal(false)
+    } else {
+      console.error('❌ Cannot join: socket not connected or username empty')
     }
   }
 
   const handleSendMessage = (e) => {
     e.preventDefault()
     if (newMessage.trim() && socket) {
+      console.log('Sending message:', newMessage.trim())
       socket.emit('send-message', {
         text: newMessage.trim()
       })

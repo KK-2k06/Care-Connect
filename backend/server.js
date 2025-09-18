@@ -16,8 +16,15 @@ const app = express()
 const server = createServer(app)
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
+    origin: [
+      "http://localhost:5173", 
+      "http://127.0.0.1:5173",
+      /^http:\/\/192\.168\.\d+\.\d+:5173$/,
+      /^http:\/\/10\.\d+\.\d+\.\d+:5173$/,
+      /^http:\/\/172\.\d+\.\d+\.\d+:5173$/
+    ],
+    methods: ["GET", "POST"],
+    credentials: true
   }
 })
 
@@ -40,7 +47,8 @@ const connectedUsers = new Map()
 const communityRoom = 'community-chat'
 
 io.on('connection', (socket) => {
-  console.log('User connected:', socket.id)
+  console.log('🔗 User connected:', socket.id)
+  console.log('📊 Total connected users:', connectedUsers.size + 1)
 
   // Handle user joining the community chat
   socket.on('join-community', (userData) => {
@@ -49,14 +57,15 @@ io.on('connection', (socket) => {
     
     socket.join(communityRoom)
     
+    console.log(`👤 ${username} joined the community chat`)
+    console.log('📊 Active users in room:', connectedUsers.size)
+    
     // Notify all users in the room about the new user
     io.to(communityRoom).emit('user-joined', {
       username,
       userId,
       activeUsers: Array.from(connectedUsers.values())
     })
-    
-    console.log(`${username} joined the community chat`)
   })
 
   // Handle incoming messages
@@ -71,6 +80,8 @@ io.on('connection', (socket) => {
         timestamp: new Date().toISOString()
       }
       
+      console.log(`Broadcasting message from ${user.username}: ${messageData.text}`)
+      
       // Broadcast message to all users in the community room
       io.to(communityRoom).emit('new-message', message)
     }
@@ -82,14 +93,17 @@ io.on('connection', (socket) => {
     if (user) {
       connectedUsers.delete(socket.id)
       
+      console.log(`👋 ${user.username} left the community chat`)
+      console.log('📊 Remaining users:', connectedUsers.size)
+      
       // Notify remaining users about the user leaving
       io.to(communityRoom).emit('user-left', {
         username: user.username,
         userId: user.userId,
         activeUsers: Array.from(connectedUsers.values())
       })
-      
-      console.log(`${user.username} left the community chat`)
+    } else {
+      console.log('🔌 User disconnected without joining:', socket.id)
     }
   })
 })
@@ -98,25 +112,30 @@ const PORT = process.env.PORT || 5000
 
 async function start(){
   try{
-    if(!process.env.MONGODB_URI){
-      throw new Error('MONGODB_URI is not set')
+    // For testing, make MongoDB optional
+    if(process.env.MONGODB_URI){
+      const mongoOptions = {}
+      if(process.env.MONGO_TLS_INSECURE === '1'){
+        mongoOptions.tlsAllowInvalidCertificates = true
+      }
+      await mongoose.connect(process.env.MONGODB_URI, mongoOptions)
+      console.log('MongoDB connected')
+    } else {
+      console.log('⚠️  MongoDB not configured - running in test mode')
     }
-    if(!process.env.JWT_SECRET){
-      throw new Error('JWT_SECRET is not set')
-    }
-    const mongoOptions = {}
-    if(process.env.MONGO_TLS_INSECURE === '1'){
-      mongoOptions.tlsAllowInvalidCertificates = true
-    }
-    await mongoose.connect(process.env.MONGODB_URI, mongoOptions)
-    console.log('MongoDB connected')
-    server.listen(PORT, () => console.log(`Server running on ${PORT}`))
+    
+    server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
   }catch(err){
     console.error('Startup error:', err.message)
     process.exit(1)
   }
 }
 
+console.log('🚀 Starting server...')
+console.log('📋 Environment check:')
+console.log('- MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not set')
+console.log('- JWT_SECRET:', process.env.JWT_SECRET ? 'Set' : 'Not set')
+console.log('- PORT:', process.env.PORT || 5000)
 start()
 
 
