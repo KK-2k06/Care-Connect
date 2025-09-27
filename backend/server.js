@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 
 import authRoutes from './src/routes/auth.js'
+import bookingRoutes from './src/routes/booking.js'
 import { requireAuth } from './src/middleware/auth.js'
 
 dotenv.config()
@@ -22,6 +23,7 @@ app.get('/api/health', (_req, res) => {
 })
 
 app.use('/api/auth', authRoutes)
+app.use('/api/booking', bookingRoutes)
 app.get('/api/protected', requireAuth, (req, res) => {
   res.json({ ok: true, userId: req.user.id, role: req.user.role })
 })

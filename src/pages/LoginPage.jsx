@@ -186,7 +186,7 @@ export default function LoginPage(){
           {/* Right: Project description */}
           <section className="rounded-2xl bg-white dark:bg-neutral-800 shadow-lg p-8 md:p-10">
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-              Smart India Hackathon Project
+              Care Connect
             </h1>
             <p className="mt-4 text-gray-600 dark:text-gray-300 leading-relaxed">
               Building an intelligent platform that simplifies access to resources, enables seamless bookings,
@@ -197,6 +197,8 @@ export default function LoginPage(){
               <li className="flex items-start gap-3"><span className="mt-1 h-2 w-2 rounded-full bg-emerald-500" /> AI-powered assistance</li>
               <li className="flex items-start gap-3"><span className="mt-1 h-2 w-2 rounded-full bg-indigo-500" /> Easy booking workflows</li>
               <li className="flex items-start gap-3"><span className="mt-1 h-2 w-2 rounded-full bg-rose-500" /> Curated learning resources</li>
+              <li className="flex items-start gap-3"><span className="mt-1 h-2 w-2 rounded-full bg-purple-500" /> Peer to Peer Support</li>
+              <li className="flex items-start gap-3"><span className="mt-1 h-2 w-2 rounded-full bg-red-500" /> Calming Games</li>
             </ul>
           </section>
 
