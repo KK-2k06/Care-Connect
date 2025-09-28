@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Test</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #messages { border: 1px solid #ccc; height: 300px; overflow-y: auto; padding: 10px; margin: 10px 0; }
+        #messageInput { width: 70%; padding: 5px; }
+        #sendButton { padding: 5px 10px; }
+        .message { margin: 5px 0; padding: 5px; border-radius: 5px; }
+        .system { background-color: #f0f0f0; }
+        .user { background-color: #e3f2fd; }
+    </style>
+</head>
+<body>
+    <h1>P2P Chat Test</h1>
+    <div id="status">Connecting...</div>
+    <div id="userCount">Users online: 0</div>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Type your message...">
+    <button id="sendButton">Send</button>
+
+    <script>
+        const socket = io('http://localhost:5000');
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const statusDiv = document.getElementById('status');
+        const userCountDiv = document.getElementById('userCount');
+
+        socket.on('connect', () => {
+            statusDiv.textContent = 'Connected';
+            statusDiv.style.color = 'green';
+        });
+
+        socket.on('disconnect', () => {
+            statusDiv.textContent = 'Disconnected';
+            statusDiv.style.color = 'red';
+        });
+
+        socket.on('welcome', (data) => {
+            addMessage('System', data.message, true);
+        });
+
+        socket.on('userJoined', (data) => {
+            addMessage('System', data.message, true);
+        });
+
+        socket.on('userLeft', (data) => {
+            addMessage('System', data.message, true);
+        });
+
+        socket.on('newMessage', (data) => {
+            addMessage(data.user, data.message, false);
+        });
+
+        socket.on('userCount', (count) => {
+            userCountDiv.textContent = `Users online: ${count}`;
+        });
+
+        function addMessage(user, message, isSystem) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isSystem ? 'system' : 'user'}`;
+            messageDiv.innerHTML = `<strong>${user}:</strong> ${message}`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                socket.emit('chatMessage', { message });
+                messageInput.value = '';
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
