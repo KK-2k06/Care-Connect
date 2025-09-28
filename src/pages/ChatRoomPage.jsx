@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { io } from 'socket.io-client'
+import { ArrowLeft } from 'lucide-react'
 
 export default function ChatRoomPage() {
   const [socket, setSocket] = useState(null)
@@ -168,13 +170,19 @@ export default function ChatRoomPage() {
         {/* Header */}
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-                P2P Support Chat
-              </h1>
-              <p className="text-slate-600 dark:text-slate-300 mt-2">
-                Anonymous peer-to-peer support community
-              </p>
+            <div className="flex items-center gap-4">
+              <Link to="/" className="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                <ArrowLeft className="h-5 w-5" />
+                <span className="text-lg font-semibold">Care Connect</span>
+              </Link>
+              <div className='ml-40'>
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white text-center">
+                  P2P Support Chat
+                </h1>
+                <p className="text-slate-600 dark:text-slate-300 mt-2 text-center">
+                  Anonymous peer-to-peer support community
+                </p>
+              </div>
             </div>
             <div className="text-right">
               <div className="flex items-center space-x-2">
